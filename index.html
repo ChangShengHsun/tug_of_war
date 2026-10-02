@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拔河出陣</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Noto+Sans+TC:wght@400;500;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --field: #1c4738;       /* the pitch */
+    --field-deep: #12332a;  /* shadow; the knots between hands on the rope */
+    --line: #2a5c49;        /* faded chalk line: dividers, surfaces */
+    --chalk: #f3f0e7;       /* chalk white: text */
+    --chalk-dim: #a9bbae;   /* secondary text */
+    --rope: #d6a64b;        /* hemp rope: the signature and the one action */
+    --rope-deep: #a07a2c;   /* rope in shadow: locked players */
+    --flag: #e4493b;        /* red tape on the rope: the 800 kg line */
+    --flag-text: #ff8a7a;   /* same red, lifted so text stays legible on green */
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--field); }
+  body {
+    margin: 0;
+    color: var(--chalk);
+    background: var(--field);
+    font-family: "Noto Sans TC", system-ui, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num {
+    font-family: "Big Shoulders Display", "Noto Sans TC", sans-serif;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 40px 16px 72px; }
+  h2 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    color: var(--chalk-dim);
+  }
+
+  /* header */
+  .eyebrow { margin: 0 0 2px; font-size: 14px; letter-spacing: .1em; color: var(--chalk-dim); }
+  .eyebrow .num { font-size: 20px; color: var(--chalk); }
+  h1 {
+    margin: 0 0 32px;
+    font-weight: 900;
+    font-size: clamp(52px, 12vw, 88px);
+    line-height: 1;
+    letter-spacing: .08em;
+  }
+
+  /* the rope: 800 kg of capacity, one segment per player on the lineup */
+  .rope-wrap { margin-bottom: 24px; }
+  .track { position: relative; padding: 7px 0; }
+  .rope {
+    display: flex;
+    height: 30px;
+    border-radius: 15px 0 0 15px;
+    overflow: hidden;
+    background: rgba(0,0,0,.2);
+  }
+  .seg {
+    flex: 0 0 var(--w);
+    height: 100%;
+    background:
+      repeating-linear-gradient(-55deg, rgba(0,0,0,.2) 0 4px, transparent 4px 9px),
+      var(--rope);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.22), inset 0 -3px 0 rgba(0,0,0,.28);
+    border-right: 3px solid var(--field-deep);
+    transform-origin: left center;
+    animation: grow .45s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay: calc(var(--i) * 40ms);
+  }
+  .seg.locked { background-color: var(--rope-deep); }
+  .rope.over .seg { background-color: var(--flag); }
+  .slack { flex: 1 1 0; align-self: center; border-top: 2px dashed rgba(243,240,231,.3); }
+  .flag { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; border-radius: 2px; background: var(--flag); }
+  .scale { display: flex; justify-content: space-between; margin-top: 4px; font-size: 13px; color: var(--chalk-dim); }
+  .scale .num { font-size: 17px; color: var(--chalk); }
+  @keyframes grow { from { transform: scaleX(0); } }
+
+  /* the one action */
+  .action { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
+  .go {
+    font: inherit;
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: .25em;
+    text-indent: .25em;
+    color: var(--field-deep);
+    background: var(--rope);
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 28px;
+    cursor: pointer;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,.25);
+  }
+  .go:hover { background: #e3b45a; }
+  .go:active { transform: translateY(2px); box-shadow: inset 0 -2px 0 rgba(0,0,0,.25); }
+  .go:focus-visible, .tog:focus-visible { outline: 3px solid var(--chalk); outline-offset: 2px; }
+  .summary { margin: 0; color: var(--chalk-dim); }
+  .summary.warn { color: var(--flag-text); }
+
+  /* the lineup */
+  .result {
+    margin: 0 0 36px;
+    padding: 18px 20px;
+    border-radius: 12px;
+    border-left: 4px solid var(--rope);
+    background: var(--line);
+  }
+  .total { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 0 12px; }
+  .total .big { font-size: 52px; line-height: 1; }
+  .total .rest-of { color: var(--chalk-dim); }
+  .total .rest-of .num { font-size: 18px; color: var(--chalk); }
+  .lineup { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .lineup li {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--rope);
+    color: var(--field-deep);
+    font-weight: 500;
+  }
+  .lineup li .num { font-size: 15px; margin-left: 6px; }
+  .lineup li.locked { background: var(--rope-deep); color: var(--chalk); }
+
+  /* the weigh-in sheet */
+  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .row {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr) auto auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 10px 10px 12px;
+    border-bottom: 1px solid var(--line);
+    border-left: 3px solid transparent;
+    transition: background .15s;
+  }
+  .row.in { background: rgba(214,166,75,.12); border-left-color: var(--rope); }
+  .row.locked { background: rgba(160,122,44,.24); border-left-color: var(--rope-deep); }
+  .row.resting :is(.dot, .name, .kg) { opacity: .4; }
+  .row.resting .name { text-decoration: line-through; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--chalk-dim); }
+  .row.in .dot { background: var(--rope); border-color: var(--rope); }
+  .row.locked .dot { background: var(--rope-deep); border-color: var(--rope); }
+  .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .kg { font-size: 22px; line-height: 1; }
+  .kg small { font-family: "Noto Sans TC", sans-serif; font-weight: 400; font-size: 12px; color: var(--chalk-dim); margin-left: 3px; }
+  .tog {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--chalk);
+    background: transparent;
+    border: 1px solid var(--chalk-dim);
+    border-radius: 999px;
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+  .tog:hover { border-color: var(--chalk); }
+  .lock[aria-pressed="true"] { background: var(--rope); border-color: var(--rope); color: var(--field-deep); }
+  .rest[aria-pressed="true"] { background: var(--chalk-dim); border-color: var(--chalk-dim); color: var(--field-deep); }
+
+  .status {
+    margin: 0 0 24px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--flag);
+    background: rgba(228,73,59,.15);
+  }
+
+  @media (max-width: 420px) {
+    .row { gap: 8px; padding-left: 8px; }
+    .tog { padding: 4px 9px; }
+    .kg { font-size: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .seg { animation: none; }
+    .row { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow"><span class="num" id="count">20</span> 人 · 上限 <span class="num">800</span> kg</p>
+    <h1>拔河出陣</h1>
+  </header>
+
+  <p class="status" id="status" hidden></p>
+
+  <section class="rope-wrap" aria-label="重量額度">
+    <div class="track">
+      <div class="rope" id="rope"><div class="slack"></div></div>
+      <span class="flag" aria-hidden="true"></span>
+    </div>
+    <div class="scale"><span class="num">0</span><span><span class="num">800</span> kg</span></div>
+  </section>
+
+  <div class="action">
+    <button class="go" id="go" type="button">出陣</button>
+    <p class="summary" id="summary">按「出陣」算出總重最接近 800 kg 的名單。</p>
+  </div>
+
+  <section class="result" id="result" hidden>
+    <h2>出陣名單</h2>
+    <p class="total">
+      <span><span class="big num" id="total">0.0</span> kg</span>
+      <span class="rest-of"><span class="num" id="n">0</span> 人 · 餘 <span class="num" id="left">0.0</span> kg</span>
+    </p>
+    <ol class="lineup" id="lineup"></ol>
+  </section>
+
+  <section>
+    <h2>過磅表</h2>
+    <ul class="rows" id="rows"></ul>
+  </section>
+</main>
+
+<script src="pick.js"></script>
+<script>
+  const CAP = 800;
+  const el = (id) => document.getElementById(id);
+  let players = [];
+  const state = new Map();   // index -> "lock" | "rest"
+  let lineup = null;         // Set of indices after 出陣; null = not computed yet, or stale
+  let note = "";             // one-line hint shown instead of the default summary
+  let rows = [];
+
+  const fmt = (kg) => kg.toFixed(1);
+  // sum in 0.1 kg integer units so 0.1 + 0.2 never shows up as 0.30000000000000004
+  const sumOf = (idxs) => [...idxs].reduce((acc, i) => acc + Math.round(players[i].weight * 10), 0) / 10;
+  const lockedIdx = () => players.map((_, i) => i).filter((i) => state.get(i) === "lock");
+
+  function check(data) {
+    if (!Array.isArray(data) || data.length === 0) return 'players.json 必須是非空陣列：[{"name": "姓名", "weight": 70}, ...]';
+    if (data.length > 31) return `players.json 最多 31 人（現在 ${data.length} 人）`;
+    for (const [i, p] of data.entries()) {
+      if (!p || typeof p.name !== "string" || !p.name.trim()) return `players.json 第 ${i + 1} 筆缺少 name`;
+      if (typeof p.weight !== "number" || !Number.isFinite(p.weight) || p.weight <= 0) return `players.json 第 ${i + 1} 筆（${p.name}）的 weight 必須是大於 0 的數字`;
+    }
+    return "";
+  }
+
+  async function load() {
+    let data;
+    try {
+      const res = await fetch("players.json", { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json();
+    } catch (err) {
+      return fail(`讀不到 players.json（${err.message}）。直接雙擊 HTML 檔打不開：請在這個資料夾執行 python -m http.server，再開 http://localhost:8000`);
+    }
+    const bad = check(data);
+    if (bad) return fail(bad);
+    players = data.map((p) => ({ name: p.name, weight: Math.round(p.weight * 10) / 10 }));
+    build();
+    paint();
+  }
+
+  function fail(message) {
+    el("status").textContent = message;
+    el("status").hidden = false;
+  }
+
+  function build() {
+    el("count").textContent = players.length;
+    rows = players.map((p, i) => {
+      const li = document.createElement("li");
+      li.className = "row";
+      li.innerHTML = '<span class="dot"></span><span class="name"></span><span class="kg num"><small>kg</small></span>'
+        + '<button class="tog lock" type="button" aria-pressed="false">鎖定</button>'
+        + '<button class="tog rest" type="button" aria-pressed="false">休息</button>';
+      li.querySelector(".name").textContent = p.name;
+      li.querySelector(".kg").prepend(fmt(p.weight));
+      li.querySelector(".lock").addEventListener("click", () => toggle(i, "lock"));
+      li.querySelector(".rest").addEventListener("click", () => toggle(i, "rest"));
+      return li;
+    });
+    el("rows").replaceChildren(...rows);
+    el("go").addEventListener("click", go);
+  }
+
+  function toggle(i, mode) {
+    if (state.get(i) === mode) state.delete(i); else state.set(i, mode);
+    if (lineup) note = "狀態改了，名單已清掉；再按一次「出陣」。";
+    lineup = null;
+    paint();
+  }
+
+  function go() {
+    const locked = lockedIdx();
+    const pool = players.map((p, i) => ({ ...p, i })).filter((p) => !state.has(p.i));
+    const { chosen } = pick(pool, CAP - sumOf(locked));
+    lineup = new Set([...locked, ...chosen.map((p) => p.i)]);
+    note = "";
+    paint();
+  }
+
+  function paint() {
+    const locked = lockedIdx();
+    const onRope = [...(lineup ?? locked)].sort((a, b) => a - b); // before 出陣 the rope shows only the locked
+    const total = sumOf(onRope);
+    const over = total > CAP;
+
+    rows.forEach((row, i) => {
+      const s = state.get(i);
+      row.classList.toggle("locked", s === "lock");
+      row.classList.toggle("resting", s === "rest");
+      row.classList.toggle("in", onRope.includes(i));
+      row.querySelector(".lock").setAttribute("aria-pressed", String(s === "lock"));
+      row.querySelector(".rest").setAttribute("aria-pressed", String(s === "rest"));
+    });
+
+    const rope = el("rope");
+    rope.classList.toggle("over", over);
+    rope.replaceChildren(
+      ...onRope.map((i, k) => {
+        const seg = document.createElement("div");
+        seg.className = "seg" + (state.get(i) === "lock" ? " locked" : "");
+        seg.style.setProperty("--w", (players[i].weight / CAP) * 100 + "%");
+        seg.style.setProperty("--i", k);
+        seg.title = `${players[i].name} ${fmt(players[i].weight)} kg`;
+        return seg;
+      }),
+      Object.assign(document.createElement("div"), { className: "slack" })
+    );
+
+    const summary = el("summary");
+    summary.classList.toggle("warn", over);
+    if (over) summary.textContent = `鎖定的人共 ${fmt(total)} kg，超過 ${CAP} kg 了，請解除一些鎖定。`;
+    else if (note) summary.textContent = note;
+    else if (lineup) summary.textContent = "";
+    else if (locked.length) summary.textContent = `已鎖定 ${locked.length} 人、${fmt(total)} kg；按「出陣」補滿其餘名額。`;
+    else summary.textContent = "按「出陣」算出總重最接近 800 kg 的名單。";
+
+    el("result").hidden = !lineup || over;
+    if (lineup && !over) {
+      el("total").textContent = fmt(total);
+      el("n").textContent = lineup.size;
+      el("left").textContent = fmt(CAP - total);
+      el("lineup").replaceChildren(...onRope.map((i) => {
+        const li = document.createElement("li");
+        li.className = state.get(i) === "lock" ? "locked" : "";
+        li.textContent = players[i].name;
+        const w = document.createElement("span");
+        w.className = "num";
+        w.textContent = fmt(players[i].weight);
+        li.append(w);
+        return li;
+      }));
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
