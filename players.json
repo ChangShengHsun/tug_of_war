@@ -1,82 +1,19 @@
 [
-  {
-    "name": "選手 01",
-    "weight": 79.7
-  },
-  {
-    "name": "選手 02",
-    "weight": 77.7
-  },
-  {
-    "name": "選手 03",
-    "weight": 60.5
-  },
-  {
-    "name": "選手 04",
-    "weight": 64.4
-  },
-  {
-    "name": "選手 05",
-    "weight": 63.7
-  },
-  {
-    "name": "選手 06",
-    "weight": 71.4
-  },
-  {
-    "name": "選手 07",
-    "weight": 65.5
-  },
-  {
-    "name": "選手 08",
-    "weight": 67.9
-  },
-  {
-    "name": "選手 09",
-    "weight": 78.5
-  },
-  {
-    "name": "選手 10",
-    "weight": 62.7
-  },
-  {
-    "name": "選手 11",
-    "weight": 67.4
-  },
-  {
-    "name": "選手 12",
-    "weight": 66.2
-  },
-  {
-    "name": "選手 13",
-    "weight": 66.2
-  },
-  {
-    "name": "選手 14",
-    "weight": 78
-  },
-  {
-    "name": "選手 15",
-    "weight": 62.1
-  },
-  {
-    "name": "選手 16",
-    "weight": 62.9
-  },
-  {
-    "name": "選手 17",
-    "weight": 75.9
-  },
-  {
-    "name": "選手 18",
-    "weight": 60.8
-  },
-  {
-    "name": "選手 19",
-    "weight": 66
-  },
-  {
-    "name": "選手 20",
-    "weight": 79.9
-  }
+  { "name": "劉祐丞", "weight": 73 },
+  { "name": "張勝勛", "weight": 72 },
+  { "name": "程禾凱", "weight": 67 },
+  { "name": "鍾翔宇", "weight": 50 },
+  { "name": "梁弘勳", "weight": 73 },
+  { "name": "吳亞倫", "weight": 72 },
+  { "name": "阮豐翊", "weight": 47 },
+  { "name": "鄭允迦", "weight": 64 },
+  { "name": "林家弘", "weight": 69 },
+  { "name": "林守威", "weight": 58 },
+  { "name": "鄭勝宇", "weight": 63 },
+  { "name": "連柏宇", "weight": 60 },
+  { "name": "謝濟遠", "weight": 62 },
+  { "name": "林源熹", "weight": 74 },
+  { "name": "陳宥漢", "weight": 57 },
+  { "name": "林思翰", "weight": 63 },
+  { "name": "鄭澄揚", "weight": 62 }
 ]
